@@ -12,6 +12,7 @@ export default function Home() {
   const [wishlist, setWishlist] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [isSearching, setIsSearching] = useState(false)
 
   const fetchMovies = async (pageNum) => {
     setIsLoading(true)
@@ -48,8 +49,10 @@ export default function Home() {
   const handleSearch = async (term) => {
     setIsLoading(true)
     setError(null)
+    setIsSearching(true)
     if (term === '') {
       setSearchResults([])
+      setIsSearching(false)
       setPage(1)
       await fetchMovies(1)
       setIsLoading(false)
@@ -72,11 +75,11 @@ export default function Home() {
   }
 
   const handleMovieUpdate = (updatedMovie) => {
-    setMovies(prevMovies =>
-      prevMovies.map(movie =>
-        movie.id === updatedMovie.id ? updatedMovie : movie
-      )
-    );
+    const updateMovieList = (list) => 
+      list.map(movie => movie.id === updatedMovie.id ? updatedMovie : movie);
+
+    setMovies(updateMovieList);
+    setSearchResults(updateMovieList);
 
     if ('isWishlisted' in updatedMovie) {
       if (updatedMovie.isWishlisted) {
@@ -92,57 +95,42 @@ export default function Home() {
     fetchWishlist()
   }, [])
 
+  const displayedMovies = isSearching ? searchResults : movies;
+
   return (
     <div>
       <TopBar onSearch={handleSearch} />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-center">Flynn's Movie Collection</h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {isLoading && movies.length === 0 ? (
+        {isLoading && displayedMovies.length === 0 ? (
           <p className="text-center">Loading...</p>
         ) : (
           <>
-            {searchResults.length > 0 ? (
-              <>
-                <h2 className="text-2xl font-bold mb-4">Movie search results</h2>
-                <ul className="space-y-4">
-                  {searchResults.map(movie => (
-                    <Movie
-                      key={movie.id}
-                      movie={movie}
-                      isWishlisted={wishlist?.some(item => item.movie_id === movie.id)}
-                      onMovieUpdate={handleMovieUpdate}
-                    />
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <>
-                <ul className="space-y-4">
-                  {movies.map(movie => (
-                    <Movie
-                      key={movie.id}
-                      movie={movie}
-                      isWishlisted={wishlist?.some(item => item.movie_id === movie.id)}
-                      onMovieUpdate={handleMovieUpdate}
-                    />
-                  ))}
-                </ul>
-                {page < totalPages && (
-                  <div className="flex justify-center mt-8">
-                    <button
-                      onClick={() => {
-                        setPage(prevPage => prevPage + 1)
-                        fetchMovies(page + 1)
-                      }}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Loading...' : 'Show Next 20'}
-                    </button>
-                  </div>
-                )}
-              </>
+            {isSearching && <h2 className="text-2xl font-bold mb-4">Search Results</h2>}
+            <ul className="space-y-4">
+              {displayedMovies.map(movie => (
+                <Movie
+                  key={movie.id}
+                  movie={movie}
+                  isWishlisted={wishlist?.some(item => item.movie_id === movie.id)}
+                  onMovieUpdate={handleMovieUpdate}
+                />
+              ))}
+            </ul>
+            {!isSearching && page < totalPages && (
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={() => {
+                    setPage(prevPage => prevPage + 1)
+                    fetchMovies(page + 1)
+                  }}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Loading...' : 'Show Next 20'}
+                </button>
+              </div>
             )}
           </>
         )}
