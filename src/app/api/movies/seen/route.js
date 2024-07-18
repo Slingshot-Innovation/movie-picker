@@ -18,8 +18,7 @@ export async function GET(request) {
         rating,
         movie: movies(*)
       `)
-      .order('rating', { ascending: false })
-      .range(offset, offset + limit - 1);
+      .order('rating', { ascending: false });
 
     if (error) throw error;
 
