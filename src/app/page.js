@@ -101,7 +101,7 @@ export default function Home() {
     <div>
       <TopBar onSearch={handleSearch} />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">Flynn's Movie Collection</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">Flynn&apos;s Movie Collection</h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {isLoading && displayedMovies.length === 0 ? (
           <p className="text-center">Loading...</p>

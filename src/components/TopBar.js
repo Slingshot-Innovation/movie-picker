@@ -20,7 +20,7 @@ export default function TopBar({ onSearch }) {
         <div className="bg-gray-800 text-white py-4 shadow-md">
             <div className="container mx-auto flex justify-between items-center px-4">
                 <Link href="/" className="text-xl font-bold">
-                    Flynn's Movies
+                    Flynn&apos;s Movies
                 </Link>
                 <div className="space-x-4 flex items-center">
                     <Link href="/wishlist" className="hover:underline">
